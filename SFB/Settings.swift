@@ -7,9 +7,30 @@
 
 import SwiftUI
 
+final class SettingsViewModel {
+    @EnvironmentObject var authState: AuthStateModel
+    
+    func logout() {
+        Task {
+            do {
+                try AuthenticationManager.shared.signOut()
+                authState.isPresented = true
+            } catch {
+                print("can't logout")
+            }
+        }
+    }
+    
+}
+
 struct Settings: View {
+    let instance = SettingsViewModel()
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List {
+            Button("Logout") {
+                instance.logout()
+            }
+        }.navigationTitle("Settings")
     }
 }
 

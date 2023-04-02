@@ -7,15 +7,26 @@
 
 import SwiftUI
 
+final class AuthStateModel: ObservableObject {
+    @Published var isPresented = false
+}
+
 struct ContentView: View {
+    @StateObject var authState = AuthStateModel()
+    let authInstance = AuthenticationManager.shared
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationStack {
+            Settings()
+        }.onAppear {
+            let user = try? authInstance.getSignedUser()
+            authState.isPresented = user == nil
         }
-        .padding()
+        .fullScreenCover(isPresented: $authState.isPresented) {
+            NavigationStack {
+                Login()
+            }
+        }
+        .environmentObject(authState)
     }
 }
 
